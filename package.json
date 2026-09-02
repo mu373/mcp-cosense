@@ -1,0 +1,32 @@
+{
+  "name": "mcp-cosense",
+  "version": "0.1.0",
+  "description": "MCP server for reading, searching, and safely editing Cosense projects",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "mcp-cosense": "bin/mcp-cosense.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node bin/mcp-cosense.mjs",
+    "start:http": "node bin/mcp-cosense.mjs --http",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@helpfeel/cosense-cli": "1.14.1",
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

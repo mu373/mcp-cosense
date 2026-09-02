@@ -1,0 +1,67 @@
+name: mcp-cosense
+
+services:
+  server:
+    build:
+      context: .
+      args:
+        COSENSE_CLI_VERSION: ${COSENSE_CLI_VERSION:-1.14.1}
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=64m,uid=10002,gid=10002,mode=1777
+    environment:
+      COSENSE_ALLOWED_PROJECTS: ${COSENSE_ALLOWED_PROJECTS:-}
+      COSENSE_MCP_PORT: 8798
+      COSENSE_CLI_TIMEOUT_SECONDS: ${COSENSE_CLI_TIMEOUT_SECONDS:-120}
+      COSENSE_CLI_MAX_OUTPUT_BYTES: ${COSENSE_CLI_MAX_OUTPUT_BYTES:-4194304}
+      COSENSE_CLI_CONCURRENCY: ${COSENSE_CLI_CONCURRENCY:-4}
+    ports:
+      - "${COSENSE_BIND_ADDRESS:-127.0.0.1}:${COSENSE_MCP_PORT:-8798}:8798"
+    volumes:
+      - credentials:/home/cosense/.cosense:ro
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 64
+    mem_limit: 512m
+    cpus: 0.5
+    healthcheck:
+      test:
+        - CMD
+        - /nodejs/bin/node
+        - -e
+        - "fetch('http://127.0.0.1:8798/health').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+
+  login:
+    profiles:
+      - setup
+    build:
+      context: .
+      args:
+        COSENSE_CLI_VERSION: ${COSENSE_CLI_VERSION:-1.14.1}
+    init: true
+    read_only: true
+    stdin_open: true
+    tty: true
+    command:
+      - login
+      - ${COSENSE_LOGIN_TARGET:-https://scrapbox.io}
+    volumes:
+      - credentials:/home/cosense/.cosense
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 32
+    mem_limit: 256m
+    cpus: 0.25
+
+volumes:
+  credentials:
