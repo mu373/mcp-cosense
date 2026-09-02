@@ -114,6 +114,3 @@ a page. A preview expires after five minutes and can be submitted only once.
 npm ci
 npm test
 ```
-
-This project is an independent MCP server. It does not contain deployment-specific
-project names, user preferences, agent prompts, or integrations with other MCP servers.
